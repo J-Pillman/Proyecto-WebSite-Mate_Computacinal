@@ -1,0 +1,7 @@
+services:
+  web:
+    build: .
+    container_name: red-de-flujo
+    ports:
+      - "80:5000"       # Puerto 80 del servidor → 5000 del contenedor
+    restart: always

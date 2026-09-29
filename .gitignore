@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Entornos virtuales
+venv/
+.venv/
+env/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editores / IDE
+.vscode/
+.idea/
+*.swp
+
+# Flask / entorno
+instance/
+.env
+.env.*
+
+# Jupyter
+.ipynb_checkpoints/

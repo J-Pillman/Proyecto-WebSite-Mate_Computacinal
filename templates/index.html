@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head lang="es">
+        <title>Proyecto Computacional</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+    </head>
+    <body>
+        <h1>Red de Flujo</h1>
+        <label for="n">Numero de nodos (7-16):</label>
+        <input type="number" id="n" min="7" max="16" value="8">
+        <button id="generar">Generar Grafo</button>
+        <div id="grafo"></div>
+        <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+        <script src="{{url_for('static',filename='js/main.js')}}"></script>
+    </body>
+</html>

@@ -11,7 +11,7 @@ Aplicación web en Flask que genera redes de flujo aleatorias (grafos dirigidos 
 
 ## Requisitos
 
-- Python 3.x
+- Python 3.x **o** Docker con Docker Compose
 - Dependencias en `requirements.txt` (Flask, networkx)
 
 ## Instalación
@@ -33,6 +33,20 @@ python app.py
 Abre [http://127.0.0.1:5000](http://127.0.0.1:5000), elige el número de nodos (7–16) y pulsa **Generar Grafo**.
 
 > **Nota:** `vis-network` se carga desde un CDN, por lo que se necesita conexión a internet al abrir la página.
+
+## Ejecutar con Docker
+
+```bash
+docker compose up --build
+```
+
+Abre [http://localhost](http://localhost) (puerto 80), elige el número de nodos (7–16) y pulsa **Generar Grafo**.
+
+Para detener el contenedor:
+
+```bash
+docker compose down
+```
 
 ## API
 
@@ -68,8 +82,12 @@ Genera un grafo aleatorio.
 │   └── graph.py        # Generación del grafo (networkx)
 ├── static/
 │   ├── css/            # Estilos
-│   └── js/main.js      # Lógica del frontend (vis-network)
+│   ├── js/main.js      # Lógica del frontend (vis-network)
+│   └── favicon.ico     # Icono del sitio
 ├── templates/
 │   └── index.html      # Interfaz web
+├── Dockerfile          # Imagen Docker de la aplicación
+├── docker-compose.yml  # Servicio web con Docker Compose
+├── .dockerignore       # Archivos excluidos de la imagen
 └── requirements.txt
 ```

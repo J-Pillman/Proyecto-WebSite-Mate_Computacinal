@@ -1,0 +1,11 @@
+body {
+    margin: 0px;
+}
+
+#grafo {
+    width: calc(100vw - 22px);
+    height: 80vh;
+    margin-left: 10px;
+    margin-right: 10px;
+    border: 1px solid #a5a5a5;
+}

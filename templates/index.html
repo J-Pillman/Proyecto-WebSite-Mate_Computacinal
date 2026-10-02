@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
     <head lang="es">
-        <title>Proyecto Computacional</title>
+        <title>Problema del flujo máximo</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width">
+        <link rel="icon" href="{{ url_for('static', filename='favicon.ico')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}"> <!--Para que funcione con Flask, los archivos estaticos se sirven desde static y se referencia con url for-->
     </head>
     <body>
-        <h1>Red de Flujo</h1>
-        <label for="n">Numero de nodos (7-16):</label>
-        <input type="number" id="n" min="7" max="16" value="8">
+        <h1>Grafo</h1>
+        <label for="n">Numero de nodos (7-16):</label> <!--for es el Id del elemento del formulario-->
+        <input type="number" id="n" min="7" max="16" value="7">
         <button id="generar">Generar Grafo</button>
         <div id="grafo"></div>
-        <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+        <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script> <!--Cargar libreria desde internet, es como un pip install, es importante primero instalar primero ya que el main.js usa vis.Network-->
         <script src="{{url_for('static',filename='js/main.js')}}"></script>
     </body>
 </html>

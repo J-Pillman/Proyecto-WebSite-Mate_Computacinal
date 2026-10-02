@@ -30,6 +30,7 @@ env
 README.md
 Dockerfile
 .dockerignore
+docker-compose.yml
 
 # Entorno local
 .env

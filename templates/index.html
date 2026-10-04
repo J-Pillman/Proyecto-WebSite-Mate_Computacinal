@@ -13,6 +13,14 @@
         <input type="number" id="n" min="7" max="16" value="7">
         <button id="generar">Generar Grafo</button>
         <div id="grafo"></div>
+        <button id="ejecutar">Ejecutar Ford-Fulkerson</button>
+        <div id="navegacion">
+            <button id="anterior" disabled>← Anterior</button>
+            <span id="paso-info"></span>
+            <button id="siguiente" disabled>Siguiente →</button>
+        </div>
+        <p id="descripcion"></p>
+        <p id="flujo-maximo"></p>
         <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script> <!--Cargar libreria desde internet, es como un pip install, es importante primero instalar primero ya que el main.js usa vis.Network-->
         <script src="{{url_for('static',filename='js/main.js')}}"></script>
     </body>

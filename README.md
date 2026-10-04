@@ -1,12 +1,16 @@
 # Red de Flujo
 
-Aplicación web en Flask que genera redes de flujo aleatorias (grafos dirigidos con capacidades), las visualiza en el navegador con [vis-network](https://visjs.github.io/vis-network/docs/network/) y resuelve el **flujo máximo** con el algoritmo de **Ford-Fulkerson**, mostrando cada paso del algoritmo.
+Aplicación web en Flask que genera redes de flujo aleatorias o permite construirlas manualmente, las visualiza en el navegador con [vis-network](https://visjs.github.io/vis-network/docs/network/) y resuelve el **flujo máximo** con el algoritmo de **Ford-Fulkerson**, mostrando cada paso del algoritmo.
 
 ## Características
 
 - Genera redes de flujo aleatorias de entre 7 y 16 nodos.
 - Cada red tiene una **fuente** (`s`) y un **sumidero** (`t`), con una ruta principal entre ellos y aristas adicionales aleatorias.
 - Las aristas tienen capacidades aleatorias (1–10).
+- **Modo manual**: construye tu propia red nodo a nodo.
+  - Nodos etiquetados con letras (A, B, C…).
+  - Aristas con capacidad personalizada, sin bucles ni duplicados.
+  - La fuente es el primer nodo y el sumidero el último.
 - Visualización interactiva: nodos con etiquetas, aristas dirigidas y capacidades.
 - **Algoritmo de Ford-Fulkerson** paso a paso:
   - Camino aumentante resaltado en rojo.
@@ -36,7 +40,12 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Abre [http://127.0.0.1:5000](http://127.0.0.1:5000), elige el número de nodos (7–16) y pulsa **Generar Grafo**. Luego pulsa **Ejecutar Ford-Fulkerson** para ver el algoritmo paso a paso.
+Abre [http://127.0.0.1:5000](http://127.0.0.1:5000) y elige un modo:
+
+- **Generar Aleatorio**: elige el número de nodos (7–16) y pulsa **Generar Grafo**.
+- **Manual**: agrega nodos y aristas con **Agregar Nodo** / **Agregar Arista** y pulsa **Usar Red**.
+
+Luego pulsa **Ejecutar Ford-Fulkerson** para ver el algoritmo paso a paso.
 
 > **Nota:** `vis-network` se carga desde un CDN, por lo que se necesita conexión a internet al abrir la página.
 

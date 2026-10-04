@@ -21,6 +21,7 @@
             <label for="n">Numero de nodos (7-16):</label>
             <input type="number" id="n" min="7" max="16" value="7">
             <button id="generar">Generar Grafo</button>
+            <button id="cancelar-aleatorio">Cancelar</button>
         </div>
 
         <!-- Modo manual -->
@@ -36,20 +37,59 @@
                 <button id="cancelar-arista">Cancelar</button>
             </div>
             <button id="usar-red">Usar Red</button>
+            <button id="cancelar-manual">Cancelar</button>
             <p id="info-manual"></p>
         </div>
 
-        <!-- Grafo + algoritmo -->
-        <div id="contenedor-grafo" style="display:none">
-            <div id="grafo"></div>
+        <!-- Grafo -->
+        <div id="grafo"></div>
+
+        <!-- Algoritmo -->
+        <div id="contenedor-algoritmo" style="display:none">
             <button id="ejecutar">Ejecutar Ford-Fulkerson</button>
+
+            <div id="pasos-algoritmo" style="display:none">
+                <h2>3. Ejecución paso a paso</h2>
             <div id="navegacion">
                 <button id="anterior" disabled>← Anterior</button>
                 <span id="paso-info"></span>
                 <button id="siguiente" disabled>Siguiente →</button>
+                <button id="ir-final">Ir al final</button>
+                <button id="reiniciar">Reiniciar</button>
             </div>
-            <p id="descripcion"></p>
-            <p id="flujo-maximo"></p>
+
+            <div id="progreso">
+                <label>Flujo total</label>
+                <div><b id="flujo-total-num">0</b> <span id="flujo-total-max"></span></div>
+                <div id="barra"><i id="barra-fill"></i></div>
+            </div>
+
+            <div id="chips-container">
+                <label>Caminos encontrados (entre paréntesis, lo que se envía por cada uno)</label>
+                <div id="chips"></div>
+            </div>
+
+            <div>
+                <b>Red con flujo</b>
+                <span class="legend">En cada flecha: flujo/capacidad. Bajo cada nodo: de qué nodo se llega y cuánto más puede llegar.</span>
+                <div id="grafo-pasos"></div>
+            </div>
+
+            <div id="leyenda">
+                <span>Llena (ya no admite más)</span>
+                <span>Con flujo parcial</span>
+                <span>Vacía (flujo 0)</span>
+                <span>Camino actual</span>
+            </div>
+
+            <div id="paso-detalle"></div>
+            </div>
+        </div>
+
+        <!-- Resultado -->
+        <div id="resultado" style="display:none">
+            <h2>4. Resultado</h2>
+            <div id="resultado-contenido"></div>
         </div>
 
         <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>

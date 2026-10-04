@@ -100,11 +100,19 @@ def ford_fulkerson(nodos, flechas, fuente, sumidero):
 
         paso_num+=1
 
-    pasos.append(snapshot(
+    lado_s = set(padre.keys())
+    corte = []
+    for (u,v),cap in capacidad.items():
+        if u in lado_s and v not in lado_s:
+            corte.append({'origen':u,'destino':v,'capacidad':cap,'flujo':flujo[(u,v)]})
+
+    paso_final = snapshot(
         paso_num, [], 0,
         [{'id': fuente, 'etiqueta':'s'}, {'id': sumidero, 'etiqueta': 't'}],
         f'No hay mas caminos aumentantes. Flujo maximo: {flujo_total}',
         flujo_total
-    ))
+    )
+    paso_final['corte_minimo'] = {'lado_s': sorted(lado_s), 'aristas': corte}
+    pasos.append(paso_final)
 
     return pasos

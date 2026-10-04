@@ -1,13 +1,19 @@
 # Red de Flujo
 
-Aplicación web en Flask que genera redes de flujo aleatorias (grafos dirigidos con capacidades) y las visualiza en el navegador con [vis-network](https://visjs.github.io/vis-network/docs/network/).
+Aplicación web en Flask que genera redes de flujo aleatorias (grafos dirigidos con capacidades), las visualiza en el navegador con [vis-network](https://visjs.github.io/vis-network/docs/network/) y resuelve el **flujo máximo** con el algoritmo de **Ford-Fulkerson**, mostrando cada paso del algoritmo.
 
 ## Características
 
-- Genera grafos dirigidos aleatorios de entre 7 y 16 nodos.
-- Cada grafo contiene una ruta desde el nodo inicial (`0`) hasta el nodo final (`n-1`).
+- Genera redes de flujo aleatorias de entre 7 y 16 nodos.
+- Cada red tiene una **fuente** (`s`) y un **sumidero** (`t`), con una ruta principal entre ellos y aristas adicionales aleatorias.
 - Las aristas tienen capacidades aleatorias (1–10).
-- Visualización interactiva: nodos, aristas dirigidas y etiquetas de capacidad.
+- Visualización interactiva: nodos con etiquetas, aristas dirigidas y capacidades.
+- **Algoritmo de Ford-Fulkerson** paso a paso:
+  - Camino aumentante resaltado en rojo.
+  - Flujo/capacidad en cada arista.
+  - Etiquetas BFS en los nodos.
+  - Navegación con botones *Anterior* / *Siguiente*.
+  - Flujo máximo al finalizar.
 
 ## Requisitos
 
@@ -30,7 +36,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Abre [http://127.0.0.1:5000](http://127.0.0.1:5000), elige el número de nodos (7–16) y pulsa **Generar Grafo**.
+Abre [http://127.0.0.1:5000](http://127.0.0.1:5000), elige el número de nodos (7–16) y pulsa **Generar Grafo**. Luego pulsa **Ejecutar Ford-Fulkerson** para ver el algoritmo paso a paso.
 
 > **Nota:** `vis-network` se carga desde un CDN, por lo que se necesita conexión a internet al abrir la página.
 
@@ -40,7 +46,7 @@ Abre [http://127.0.0.1:5000](http://127.0.0.1:5000), elige el número de nodos (
 docker compose up --build
 ```
 
-Abre [http://localhost](http://localhost) (puerto 80), elige el número de nodos (7–16) y pulsa **Generar Grafo**.
+Abre [http://localhost](http://localhost) (puerto 80).
 
 Para detener el contenedor:
 
@@ -52,7 +58,7 @@ docker compose down
 
 ### `POST /grafo`
 
-Genera un grafo aleatorio.
+Genera una red de flujo aleatoria.
 
 **Cuerpo (JSON):**
 
@@ -64,30 +70,63 @@ Genera un grafo aleatorio.
 
 ```json
 {
-  "nodos": [{ "id": 0, "label": "0" }],
-  "aristas": [{ "origen": 0, "destino": 2, "capacidad": 10 }],
-  "inicio": 0,
-  "final": 7
+  "nodos": [{ "id": 0, "label": "A" }],
+  "flechas": [{ "origen": 0, "destino": 2, "capacidad": 10 }],
+  "fuente": 0,
+  "sumidero": 7
 }
 ```
 
 **Errores (400):** si `n` no está entre 7 y 16 o el cuerpo es inválido, devuelve `{ "error": "..." }`.
 
+### `POST /algoritmo`
+
+Ejecuta el algoritmo de Ford-Fulkerson sobre una red de flujo.
+
+**Cuerpo (JSON):** la respuesta de `POST /grafo` (nodos, flechas, fuente, sumidero).
+
+**Respuesta (200):**
+
+```json
+{
+  "pasos": [
+    {
+      "paso": 0,
+      "descripcion": "Estado inicial: flujo = 0 en todas las aristas",
+      "flujo_total": 0,
+      "camino": [],
+      "cuello_botella": 0,
+      "flujo": [{ "origen": 0, "destino": 1, "flujo": 0, "capacidad": 5 }],
+      "etiquetas": [{ "id": 0, "etiqueta": "s" }]
+    }
+  ]
+}
+```
+
+Cada paso incluye:
+- `flujo`: estado actual de flujo/capacidad en cada arista.
+- `camino`: nodos del camino aumentante (resaltado en rojo).
+- `cuello_botella`: flujo mínimo del camino.
+- `etiquetas`: etiquetas BFS de los nodos (formato `(predecesor,capacidad)`).
+- `flujo_total`: flujo acumulado hasta ese paso.
+
 ## Estructura del proyecto
 
 ```
 .
-├── app.py              # Aplicación Flask (rutas)
+├── app.py                              # Aplicación Flask (rutas)
 ├── backend/
-│   └── graph.py        # Generación del grafo (networkx)
+│   ├── red_de_flujo.py                 # Generación de la red de flujo (networkx)
+│   └── algoritmo_ford_fulkerson.py     # Algoritmo de Ford-Fulkerson
 ├── static/
-│   ├── css/            # Estilos
-│   ├── js/main.js      # Lógica del frontend (vis-network)
-│   └── favicon.ico     # Icono del sitio
+│   ├── css/style.css                   # Estilos
+│   ├── js/main.js                      # Lógica del frontend (vis-network)
+│   └── favicon.ico                     # Icono del sitio
 ├── templates/
-│   └── index.html      # Interfaz web
-├── Dockerfile          # Imagen Docker de la aplicación
-├── docker-compose.yml  # Servicio web con Docker Compose
-├── .dockerignore       # Archivos excluidos de la imagen
+│   └── index.html                      # Interfaz web
+├── Dockerfile                          # Imagen Docker
+├── docker-compose.yml                  # Servicio web con Docker Compose
+├── .dockerignore
+├── .gitignore
 └── requirements.txt
 ```

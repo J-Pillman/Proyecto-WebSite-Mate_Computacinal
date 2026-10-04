@@ -8,16 +8,17 @@ Aplicación web en Flask que genera redes de flujo aleatorias o permite construi
 - Cada red tiene una **fuente** (`s`) y un **sumidero** (`t`), con una ruta principal entre ellos y aristas adicionales aleatorias.
 - Las aristas tienen capacidades aleatorias (1–10).
 - **Modo manual**: construye tu propia red nodo a nodo.
-  - Nodos etiquetados con letras (A, B, C…).
+  - Nodos etiquetados con letras (A, B, C…), entre 7 y 16.
   - Aristas con capacidad personalizada, sin bucles ni duplicados.
+  - La red se dibuja en vivo mientras la construyes.
   - La fuente es el primer nodo y el sumidero el último.
-- Visualización interactiva: nodos con etiquetas, aristas dirigidas y capacidades.
+- Visualización interactiva: nodos con etiquetas, aristas dirigidas, capacidades y posiciones de nodo preservadas al arrastrar.
 - **Algoritmo de Ford-Fulkerson** paso a paso:
-  - Camino aumentante resaltado en rojo.
-  - Flujo/capacidad en cada arista.
-  - Etiquetas BFS en los nodos.
-  - Navegación con botones *Anterior* / *Siguiente*.
-  - Flujo máximo al finalizar.
+  - Camino aumentante resaltado en rojo; colores según el estado de cada arista (llena, parcial o vacía).
+  - Flujo/capacidad en cada arista y etiquetas BFS en los nodos.
+  - Navegación con botones *Anterior* / *Siguiente* / *Ir al final* / *Reiniciar* o con las flechas del teclado.
+  - Barra de progreso del flujo total y detalle explicativo de cada paso.
+  - Flujo máximo y **corte mínimo** al finalizar (verificando flujo máximo = capacidad del corte).
 
 ## Requisitos
 
@@ -40,7 +41,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Abre [http://127.0.0.1:5000](http://127.0.0.1:5000) y elige un modo:
+Abre [http://127.0.0.1:5001](http://127.0.0.1:5001) y elige un modo:
 
 - **Generar Aleatorio**: elige el número de nodos (7–16) y pulsa **Generar Grafo**.
 - **Manual**: agrega nodos y aristas con **Agregar Nodo** / **Agregar Arista** y pulsa **Usar Red**.
@@ -118,6 +119,7 @@ Cada paso incluye:
 - `cuello_botella`: flujo mínimo del camino.
 - `etiquetas`: etiquetas BFS de los nodos (formato `(predecesor,capacidad)`).
 - `flujo_total`: flujo acumulado hasta ese paso.
+- `corte_minimo` (solo en el último paso): `lado_s` (nodos alcanzables desde la fuente) y `aristas` del corte con su flujo y capacidad. La suma de capacidades del corte es igual al flujo máximo.
 
 ## Estructura del proyecto
 

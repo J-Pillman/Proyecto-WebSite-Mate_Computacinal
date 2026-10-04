@@ -27,4 +27,4 @@ def algoritmo():
         return jsonify({'error':str(error)}), 400
 
 if __name__=='__main__':   #Ejecuta la aplicacion
-    app.run(debug=True) #Flask reinicia cuando hay cambios y correra en el puerto 5000 
+    app.run(debug=True, port=5001) #Flask reinicia cuando hay cambios y correra en el puerto 5000 

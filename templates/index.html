@@ -8,15 +8,12 @@
         <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
     </head>
     <body>
-        <h1>Grafo</h1>
 
-        <!-- Elegir modo -->
         <div id="elegir-modo">
             <button id="btn-aleatorio">Generar Aleatorio</button>
             <button id="btn-manual">Manual</button>
         </div>
 
-        <!-- Modo aleatorio -->
         <div id="modo-aleatorio" style="display:none">
             <label for="n">Numero de nodos (7-16):</label>
             <input type="number" id="n" min="7" max="16" value="7">
@@ -24,7 +21,6 @@
             <button id="cancelar-aleatorio">Cancelar</button>
         </div>
 
-        <!-- Modo manual -->
         <div id="modo-manual" style="display:none">
             <button id="agregar-nodo">Agregar Nodo</button>
             <button id="agregar-arista">Agregar Arista</button>
@@ -41,10 +37,8 @@
             <p id="info-manual"></p>
         </div>
 
-        <!-- Grafo -->
         <div id="grafo"></div>
 
-        <!-- Algoritmo -->
         <div id="contenedor-algoritmo" style="display:none">
             <button id="ejecutar">Ejecutar Ford-Fulkerson</button>
             <button id="volver-edicion" style="background-color: #f59e0b;" style="display:none">Volver</button>
@@ -83,7 +77,6 @@
             </div>
         </div>
 
-        <!-- Resultado -->
         <div id="resultado" style="display:none">
             <h2>4. Resultado</h2>
             <div id="resultado-contenido"></div>

@@ -283,7 +283,9 @@ function actualizarInfoManual() {
 function mostrarGrafoCompleto(datos) {
     const nodos = new vis.DataSet(aplicarPosiciones(datos.nodos.map(nodo => ({
         id: nodo.id,
-        label: nodo.label
+        label: nodo.label,
+        x: nodo.x,
+        y: nodo.y
     }))));
 
     const aristas = new vis.DataSet(datos.flechas.map(flecha => ({

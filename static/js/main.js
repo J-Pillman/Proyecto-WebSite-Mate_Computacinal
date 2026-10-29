@@ -41,11 +41,18 @@ let dsNodos = null;
 let dsFlechas = null;
 
 const opcionesRed = {
-    physics: false,
+    physics: {
+        enabled: true,
+        barnesHut: {
+            gravitationalConstant: 0, // Evita que los nodos se empujen entre sí
+            centralGravity: 0,        // Evita que los nodos sean atraídos al centro
+            springConstant: 0         // Evita que las flechas tiren de los nodos como resortes
+        }
+    },
     interaction: {
         dragNodes: true,
         dragView: true,
-        zoomView: true,
+        zoomView: false,
         hover: true,
         tooltipDelay: 200
     },
@@ -81,12 +88,12 @@ function aplicarPosiciones(listaNodos) {
 
 document.getElementById('btn-aleatorio').addEventListener('click', () => {
     document.getElementById('elegir-modo').style.display = 'none';
-    document.getElementById('modo-aleatorio').style.display = 'block';
+    document.getElementById('modo-aleatorio').style.display = 'flex';
 });
 
 document.getElementById('btn-manual').addEventListener('click', () => {
     document.getElementById('elegir-modo').style.display = 'none';
-    document.getElementById('modo-manual').style.display = 'block';
+    document.getElementById('modo-manual').style.display = 'flex';
     crearGrafoVacio();
     actualizarInfoManual();
 });
@@ -99,7 +106,7 @@ function volverAMenu() {
     document.getElementById('contenedor-algoritmo').style.display = 'none';
     document.getElementById('resultado').style.display = 'none';
     document.getElementById('form-arista').style.display = 'none';
-    document.getElementById('elegir-modo').style.display = 'block';
+    document.getElementById('elegir-modo').style.display = 'flex';
 
     grafoActual = null;
     pasos = [];
@@ -110,6 +117,7 @@ function volverAMenu() {
     posicionesGuardadas = {};
 
     if (red) { red.destroy(); red = null; }
+    destruirRedPasos();
 }
 
 document.getElementById('cancelar-aleatorio').addEventListener('click', volverAMenu);
@@ -164,7 +172,7 @@ document.getElementById('agregar-arista').addEventListener('click', () => {
         alert('Agrega al menos 2 nodos primero');
         return;
     }
-    document.getElementById('form-arista').style.display = 'block';
+    document.getElementById('form-arista').style.display = 'flex';
     actualizarSelectsArista();
 });
 
@@ -298,11 +306,13 @@ function mostrarGrafoCompleto(datos) {
 
     if (red) red.destroy();
     red = new vis.Network(contenedor, { nodes: nodos, edges: aristas }, opcionesRed);
+    red.fit();
     red.on('dragEnd', guardarPosiciones);
 
 }
 
 function mostrarAlgoritmo() {
+    destruirRedPasos();
     pasos = [];
     pasoActual = 0;
     memoriaColoresAristas = {};
@@ -319,6 +329,7 @@ function mostrarAlgoritmo() {
     document.getElementById('modo-aleatorio').style.display = 'none';
     document.getElementById('pasos-algoritmo').style.display = 'none';
     document.getElementById('resultado').style.display = 'none';
+    document.getElementById('ejecutar').style.display = 'inline-block';
     document.getElementById('volver-edicion').style.display = 'none';
 
 }
@@ -431,6 +442,7 @@ if (!redPasos) {
     dsNodosPasos = new vis.DataSet(aplicarPosiciones(datosNodos));
     dsAristasPasos = new vis.DataSet(datosAristas);
     redPasos = new vis.Network(contenedorPasos, { nodes: dsNodosPasos, edges: dsAristasPasos }, opcionesRed);
+    redPasos.fit();
 } else {
     dsNodosPasos.update(datosNodos);    
     dsAristasPasos.update(datosAristas);
@@ -596,14 +608,16 @@ function mostrarResultado(pasoFinal) {
              <td>${a.flujo}</td><td>${a.capacidad}</td></tr>`
         ).join('');
         corteHTML = `
-            <h3>Corte mínimo</h3>
-            <p>Nodos del lado de la fuente: <b>${corte.lado_s.map(nombreNodo).join(', ')}</b></p>
-            <table>
-                <tr><th>Arista del corte</th><th>Flujo</th><th>Capacidad</th></tr>
-                ${filasCorte}
-                <tr><td><b>Total</b></td><td></td><td><b>${totalCap}</b></td></tr>
-            </table>
-            <p>Flujo máximo = <b>${flujoMax}</b> = Capacidad del corte = <b>${totalCap}</b> ✓</p>`;
+            <div>
+                <b>Corte mínimo</b>
+                <p>Nodos del lado de la fuente: <b>${corte.lado_s.map(nombreNodo).join(', ')}</b></p>
+                <table>
+                    <tr><th>Arista del corte</th><th>Flujo</th><th>Capacidad</th></tr>
+                    ${filasCorte}
+                    <tr><td><b>Total</b></td><td></td><td><b>${totalCap}</b></td></tr>
+                </table>
+                <p>Flujo máximo = <b>${flujoMax}</b> = Capacidad del corte = <b>${totalCap}</b> ✓</p>
+            </div>`;
     }
 
     document.getElementById('resultado-contenido').innerHTML = `

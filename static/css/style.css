@@ -1,11 +1,281 @@
-body {
-    margin: 0px;
-}
-
 #grafo {
     width: calc(100vw - 22px);
     height: 80vh;
     margin-left: 10px;
     margin-right: 10px;
     border: 1px solid #a5a5a5;
+}
+
+/* =========================================
+   Variables Globales y Reset
+   ========================================= */
+:root {
+    --bg-color: #f8fafc;
+    --text-main: #334155;
+    --text-muted: #64748b;
+    --primary: #2463eb;
+    --primary-hover: #1d4ed8;
+    --danger: #ef4444;
+    --danger-hover: #b91c1c;
+    --success: #10b981;
+    --border: #e2e8f0;
+    --card-bg: #ffffff;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --radius: 8px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* =========================================
+   1. Base y Tipografía
+   ========================================= */
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.6;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1, h2 {
+    color: #0f172a;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+label {
+    font-weight: 500;
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+/* =========================================
+   2. Botones y Controles de Formulario
+   ========================================= */
+button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+}
+
+button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+button:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+button[id*="cancelar"] {
+    background-color: var(--danger);
+}
+
+button[id*="cancelar"]:hover {
+    background-color: var(--danger-hover);
+}
+
+input[type="number"], select {
+    padding: 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input[type="number"]:focus, select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* =========================================
+   3. Paneles de Configuración
+   ========================================= */
+#elegir-modo, #modo-aleatorio, #modo-manual {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+}
+
+#form-arista {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--border);
+}
+
+#form-arista span {
+    color: var(--text-muted);
+    font-weight: bold;
+}
+
+/* =========================================
+   4. Lienzos del Grafo
+   ========================================= */
+#grafo, #grafo-pasos {
+    width: 100%;
+    height: 500px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+/* =========================================
+   5. Panel de Navegación del Algoritmo
+   ========================================= */
+#navegacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: var(--card-bg);
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+
+#paso-info {
+    font-weight: 600;
+    min-width: 120px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+/* =========================================
+   6. Barra de Progreso y Flujo
+   ========================================= */
+#progreso {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+
+#progreso > div:first-of-type {
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+}
+
+#flujo-total-num {
+    color: var(--success);
+    font-size: 1.5rem;
+}
+
+#barra {
+    width: 100%;
+    height: 12px;
+    background-color: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+#barra-fill {
+    display: block;
+    height: 100%;
+    background-color: var(--success);
+    width: 0%; /* Se actualiza con JS */
+    transition: width 0.4s ease-in-out;
+}
+
+/* =========================================
+   7. Elementos de Datos (Chips & Leyenda)
+   ========================================= */
+#chips-container {
+    margin-bottom: 1.5rem;
+}
+
+#chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+/* Estilo para los chips generados por JS */
+.chip {
+    background-color: #e0e7ff;
+    color: #3730a3;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid #c7d2fe;
+}
+
+#leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+#leyenda .punto { 
+    display:inline-block; 
+    width:12px; 
+    height:12px; 
+    border-radius:50%; 
+    flex:none; }
+
+/* =========================================
+   8. Paneles de Resultados
+   ========================================= */
+#paso-detalle {
+    background-color: #f0fdf4;
+    border-left: 4px solid var(--success);
+    color: #166534;
+    padding: 1rem 1.5rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin-top: 1.5rem;
+    font-weight: 500;
+}
+
+#resultado {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-top: 2rem;
+    border-top: 4px solid var(--primary);
+}
+
+#resultado-contenido {
+    margin-top: 1rem;
+    font-size: 1.1rem;
 }

@@ -15,8 +15,26 @@ const LETRAS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const MIN_NODOS = 7;
 const MAX_NODOS = 16;
 
-const contenedor = document.getElementById('grafo');
-let red = null;
+// Colores para las aristas
+let memoriaColoresAristas = {};
+const COLOR_LLENA = '#d32f2f', COLOR_PARCIAL = '#f59e0b', COLOR_VACIA = '#848484';
+
+const COLORES_CAMINOS = ['#2563eb','#059669','#7c3aed','#0891b2','#c026d3','#4d7c0f','#1e3a8a','#78350f'];
+const colorCamino = n => COLORES_CAMINOS[(n - 1) % COLORES_CAMINOS.length]; // n = nº de paso (≥1)
+
+const contenedor = document.getElementById('grafo');            
+const contenedorPasos = document.getElementById('grafo-pasos');  
+let red = null;          // superior
+let redPasos = null;     // inferior
+let dsNodosPasos = null;
+let dsAristasPasos = null;
+
+function destruirRedPasos() {
+    if (redPasos) { redPasos.destroy(); redPasos = null; }
+    dsNodosPasos = null;
+    dsAristasPasos = null;
+    contenedorPasos.innerHTML = '';
+}
 
 // Datasets en vivo para modo manual
 let dsNodos = null;
@@ -285,6 +303,7 @@ function mostrarGrafoCompleto(datos) {
 function mostrarAlgoritmo() {
     pasos = [];
     pasoActual = 0;
+    memoriaColoresAristas = {};
     document.getElementById('paso-detalle').innerHTML = '';
     document.getElementById('paso-info').textContent = '';
     document.getElementById('flujo-total-num').textContent = '0';
@@ -294,8 +313,12 @@ function mostrarAlgoritmo() {
     document.getElementById('anterior').disabled = true;
     document.getElementById('siguiente').disabled = true;
     document.getElementById('contenedor-algoritmo').style.display = 'block';
+    document.getElementById('modo-manual').style.display = 'none';
+    document.getElementById('modo-aleatorio').style.display = 'none';
     document.getElementById('pasos-algoritmo').style.display = 'none';
     document.getElementById('resultado').style.display = 'none';
+    document.getElementById('volver-edicion').style.display = 'none';
+
 }
 
 // ========== FORD-FULKERSON ==========
@@ -312,8 +335,13 @@ document.getElementById('ejecutar').addEventListener('click', async () => {
     if (!peticion.ok) { alert('Error: ' + datos.error); return; }
     pasos = datos.pasos;
     pasoActual = 0;
+
+    document.getElementById('ejecutar').style.display = 'none';
+    document.getElementById('volver-edicion').style.display = 'inline-block';
+
     document.getElementById('pasos-algoritmo').style.display = 'block';
     document.getElementById('resultado').style.display = 'none';
+   
     renderizarPaso();
 });
 
@@ -323,6 +351,21 @@ document.getElementById('anterior').addEventListener('click', () => {
 
 document.getElementById('siguiente').addEventListener('click', () => {
     if (pasoActual < pasos.length - 1) { pasoActual++; renderizarPaso(); }
+});
+
+document.getElementById('volver-edicion').addEventListener('click', () => {
+    document.getElementById('contenedor-algoritmo').style.display = 'none';
+    document.getElementById('pasos-algoritmo').style.display = 'none';
+    document.getElementById('resultado').style.display = 'none';
+    document.getElementById('ejecutar').style.display = 'inline-block';
+    document.getElementById('volver-edicion').style.display = 'none';
+
+    destruirRedPasos();
+    pasos = [];
+    pasoActual = 0;
+
+    const panel = nodosManuales.length > 0 ? 'modo-manual' : 'modo-aleatorio';
+    document.getElementById(panel).style.display = 'flex';
 });
 
 document.getElementById('ir-final').addEventListener('click', () => {
@@ -355,39 +398,41 @@ function renderizarPaso() {
         : pasos[pasoActual - 1].flujo;
 
     // --- Grafo ---
-    const nodos = new vis.DataSet(aplicarPosiciones(grafoActual.nodos.map(nodo => {
-        const et = paso.etiquetas.find(e => e.id === nodo.id);
-        return {
-            id: nodo.id,
-            label: et ? nodo.label + '\n' + et.etiqueta : nodo.label
-        };
-    })));
+    const datosNodos = grafoActual.nodos.map(nodo => {
+    const et = paso.etiquetas.find(e => e.id === nodo.id);
+    return { id: nodo.id, label: et ? nodo.label + '\n' + et.etiqueta : nodo.label };
+});
 
-    const aristas = new vis.DataSet(paso.flujo.map(f => {
-        const enCamino = paso.camino.some((n, i) =>
-            i < paso.camino.length - 1 &&
-            ((paso.camino[i] === f.origen && paso.camino[i+1] === f.destino) ||
-             (paso.camino[i] === f.destino && paso.camino[i+1] === f.origen))
-        );
-        let color = '#848484';
-        if (enCamino) color = 'red';
-        else if (f.flujo >= f.capacidad) color = '#d32f2f';
-        else if (f.flujo > 0) color = '#1976d2';
-        return {
-            from: f.origen,
-            to: f.destino,
-            label: f.flujo + '/' + f.capacidad,
-            color: { color },
-            width: enCamino ? 3 : (f.flujo > 0 ? 2 : 1),
-            arrows: 'to'
-        };
-    }));
+const datosAristas = paso.flujo.map(f => {
+    const enCamino = paso.camino.some((n, i) =>
+        i < paso.camino.length - 1 &&
+        ((paso.camino[i] === f.origen && paso.camino[i+1] === f.destino) ||
+         (paso.camino[i] === f.destino && paso.camino[i+1] === f.origen)));
 
-    if (red) red.destroy();
-    red = new vis.Network(contenedor, { nodes: nodos, edges: aristas }, opcionesRed);
-    red.on('dragEnd', guardarPosiciones);
+    let color = COLOR_VACIA, colortexto = '#343434';
+    if (enCamino)                     { color = colorCamino(pasoActual); }
+    else if (f.flujo >= f.capacidad)  { color = COLOR_LLENA; colortexto = COLOR_LLENA; }
+    else if (f.flujo > 0)             { color = COLOR_PARCIAL; }
 
+    return {
+        id: `${f.origen}-${f.destino}`,   
+        from: f.origen, to: f.destino,
+        label: f.flujo + '/' + f.capacidad,
+        color: { color, highlight: color },
+        font: { color: colortexto },
+        width: enCamino ? 3 : (f.flujo > 0 ? 2 : 1),
+        arrows: 'to'
+    };
+});
 
+if (!redPasos) {
+    dsNodosPasos = new vis.DataSet(aplicarPosiciones(datosNodos));
+    dsAristasPasos = new vis.DataSet(datosAristas);
+    redPasos = new vis.Network(contenedorPasos, { nodes: dsNodosPasos, edges: dsAristasPasos }, opcionesRed);
+} else {
+    dsNodosPasos.update(datosNodos);    
+    dsAristasPasos.update(datosAristas);
+}
     // --- Navegación ---
     document.getElementById('paso-info').textContent =
         esPrimero ? 'Inicio' : esUltimo ? 'Terminado' : `Paso ${pasoActual} de ${totalPasos}`;
@@ -404,13 +449,17 @@ function renderizarPaso() {
 
     // --- Chips de caminos ---
     const chipsHTML = pasos.slice(0, pasoActual + 1)
-        .filter(p => p.camino.length > 0)
-        .map((p, i) => {
-            const texto = p.camino.map(n => nombreNodo(n)).join(' → ');
-            const activo = p === paso ? 'style="font-weight:bold"' : '';
-            return `<span ${activo}>${texto} (+${p.cuello_botella})</span>`;
-        }).join(' &nbsp;') || '<span>aún ninguno</span>';
+    .filter(p => p.camino.length > 0)
+    .map(p => {
+        const color = colorCamino(p.paso);
+        const activo = p === paso ? `background:${color}; color:#fff;` : '';
+        return `<span class="chip" style="color:${color}; border-color:${color}; ${activo}">` +
+               `${p.camino.map(nombreNodo).join(' → ')} (+${p.cuello_botella})</span>`;
+    }).join(' ') || '<span>Ninguno</span>';
+
     document.getElementById('chips').innerHTML = chipsHTML;
+
+    renderizarLeyenda(paso);
 
     // --- Detalle del paso ---
     document.getElementById('paso-detalle').innerHTML = generarDetallePaso(paso, flujoAntes, esPrimero, esUltimo);
@@ -421,6 +470,21 @@ function renderizarPaso() {
     } else {
         document.getElementById('resultado').style.display = 'none';
     }
+}
+
+function renderizarLeyenda(paso) {
+    const items = [
+        { color: COLOR_LLENA,   texto: 'Llena (ya no admite más)' },
+        { color: COLOR_PARCIAL, texto: 'Con flujo parcial' },
+        { color: COLOR_VACIA,   texto: 'Vacía (flujo 0)' },
+        paso.camino.length > 0
+            ? { color: colorCamino(paso.paso),
+                texto: `Camino ${paso.paso}: ${paso.camino.map(nombreNodo).join(' → ')} (+${paso.cuello_botella})` }
+            : { color: '#cbd5e1', texto: 'Camino actual: ninguno en este paso' }
+    ];
+    document.getElementById('leyenda').innerHTML = items
+        .map(i => `<span><i class="punto" style="background:${i.color}"></i>${i.texto}</span>`)
+        .join('');
 }
 
 function generarDetallePaso(paso, flujoAntes, esPrimero, esUltimo) {

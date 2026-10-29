@@ -4,21 +4,21 @@ Aplicación web en Flask que genera redes de flujo aleatorias o permite construi
 
 ## Características
 
-- Genera redes de flujo aleatorias de entre 7 y 16 nodos.
-- Cada red tiene una **fuente** (`s`) y un **sumidero** (`t`), con una ruta principal entre ellos y aristas adicionales aleatorias.
+- Genera redes de flujo aleatorias de entre 7 y 16 nodos, libres de ciclos y ordenadas por columnas (capas) de izquierda a derecha.
+- Cada red tiene una **fuente** (`s`, a la izquierda) y un **sumidero** (`t`, a la derecha), con una ruta principal entre ellos y aristas adicionales hacia adelante.
 - Las aristas tienen capacidades aleatorias (1–10).
 - **Modo manual**: construye tu propia red nodo a nodo.
   - Nodos etiquetados con letras (A, B, C…), entre 7 y 16.
   - Aristas con capacidad personalizada, sin bucles ni duplicados.
   - La red se dibuja en vivo mientras la construyes.
   - La fuente es el primer nodo y el sumidero el último.
-- Visualización interactiva: nodos con etiquetas, aristas dirigidas, capacidades y posiciones de nodo preservadas al arrastrar.
-- **Algoritmo de Ford-Fulkerson** paso a paso:
-  - Camino aumentante resaltado en rojo; colores según el estado de cada arista (llena, parcial o vacía).
+- Visualización interactiva y responsiva (PC y móvil): nodos con etiquetas, aristas dirigidas, capacidades y posiciones de nodo preservadas al arrastrar.
+- **Algoritmo de Ford-Fulkerson** paso a paso (en un segundo lienzo dedicado):
+  - Cada camino aumentante se resalta con su propio color distintivo; colores según el estado de cada arista (llena en rojo, parcial en ámbar o vacía en gris).
   - Flujo/capacidad en cada arista y etiquetas BFS en los nodos.
-  - Navegación con botones *Anterior* / *Siguiente* / *Ir al final* / *Reiniciar* o con las flechas del teclado.
-  - Barra de progreso del flujo total y detalle explicativo de cada paso.
-  - Flujo máximo y **corte mínimo** al finalizar (verificando flujo máximo = capacidad del corte).
+  - Navegación con botones *Anterior* / *Siguiente* / *Ir al final* / *Reiniciar*, botón *Volver* a edición o con las flechas del teclado.
+  - Barra de progreso del flujo total, leyenda dinámica y detalle explicativo de cada paso.
+  - Tablas de resultados con el flujo máximo, caminos usados y **corte mínimo** al finalizar (verificando flujo máximo = capacidad del corte).
 
 ## Requisitos
 
@@ -80,7 +80,7 @@ Genera una red de flujo aleatoria.
 
 ```json
 {
-  "nodos": [{ "id": 0, "label": "A" }],
+  "nodos": [{ "id": 0, "label": "A", "x": 0, "y": 0 }],
   "flechas": [{ "origen": 0, "destino": 2, "capacidad": 10 }],
   "fuente": 0,
   "sumidero": 7
@@ -115,7 +115,7 @@ Ejecuta el algoritmo de Ford-Fulkerson sobre una red de flujo.
 
 Cada paso incluye:
 - `flujo`: estado actual de flujo/capacidad en cada arista.
-- `camino`: nodos del camino aumentante (resaltado en rojo).
+- `camino`: nodos del camino aumentante (resaltado con un color distintivo por paso).
 - `cuello_botella`: flujo mínimo del camino.
 - `etiquetas`: etiquetas BFS de los nodos (formato `(predecesor,capacidad)`).
 - `flujo_total`: flujo acumulado hasta ese paso.
